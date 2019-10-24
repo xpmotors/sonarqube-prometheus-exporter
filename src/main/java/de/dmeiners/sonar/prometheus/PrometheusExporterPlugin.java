@@ -32,13 +32,29 @@ public class PrometheusExporterPlugin implements Plugin {
     public void define(Context context) {
 
         List<PropertyDefinition> properties = PrometheusWebService.SUPPORTED_METRICS.stream()
-            .map(metric -> PropertyDefinition.builder(PrometheusWebService.CONFIG_PREFIX + metric.getKey())
-                .name(String.format("Export \"%s\" as Prometheus metric.", metric.getName()))
-                .description(metric.getDescription())
-                .type(PropertyType.BOOLEAN)
-                .defaultValue(Boolean.TRUE.toString())
-                .build())
-            .collect(Collectors.toList());
+                .map(metric -> PropertyDefinition.builder(PrometheusWebService.CONFIG_PREFIX + metric.getKey())
+                        .name(String.format("Export \"%s\" as Prometheus metric.", metric.getName()))
+                        .description(metric.getDescription())
+                        .type(PropertyType.BOOLEAN)
+                        .defaultValue(Boolean.TRUE.toString())
+                        .build())
+                .collect(Collectors.toList());
+
+        PropertyDefinition token = PropertyDefinition.builder(PrometheusWebService.METRIC_TOKEN)
+                .name(PrometheusWebService.METRIC_TOKEN)
+                .description("The sonar token used to retrieve sonar project's metrics")
+                .type(PropertyType.PASSWORD)
+                .defaultValue("")
+                .build();
+        properties.add(token);
+
+        PropertyDefinition baseUrl = PropertyDefinition.builder(PrometheusWebService.METRIC_BASE_URL)
+                .name(PrometheusWebService.METRIC_BASE_URL)
+                .description("The base url of sonar")
+                .type(PropertyType.STRING)
+                .defaultValue(PrometheusWebService.METRIC_BASE_URL_DEFAULT)
+                .build();
+        properties.add(baseUrl);
 
         context.addExtensions(properties);
         context.addExtension(PrometheusWebService.class);
